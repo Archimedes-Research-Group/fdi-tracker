@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global FDI Tracker — Archimedes Research Group</title>
+<style>
+  :root {
+    --navy:       #0D1F3C;
+    --navy-light: #152a4a;
+    --navy-row:   #11243f;
+    --cream:      #F7F4EF;
+    --gold:       #C9963A;
+    --gold-dim:   rgba(201,150,58,0.25);
+    --text:       rgba(247,244,239,0.92);
+    --text-dim:   rgba(247,244,239,0.55);
+    --border:     rgba(201,150,58,0.15);
+    --font-sans:  'Helvetica Neue', Arial, sans-serif;
+    --font-serif: 'Georgia', 'Times New Roman', serif;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--navy); color:var(--text); font-family:var(--font-sans); }
+
+  /* ── Header ── */
+  .hdr {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1rem 1.5rem; border-bottom:1px solid var(--gold-dim);
+    flex-wrap:wrap; gap:0.75rem;
+    background:linear-gradient(135deg,#0D1F3C 0%,#162d52 100%);
+    position:sticky; top:0; z-index:20;
+  }
+  .hdr-left { display:flex; align-items:center; gap:1rem; }
+  .hdr .accentbar { width:3px; height:32px; background:var(--gold); border-radius:2px; flex-shrink:0; }
+  .hdr-titles { display:flex; flex-direction:column; gap:1px; }
+  .hdr h1 { font-family:var(--font-sans); font-size:1.05rem; font-weight:800; color:#fff; letter-spacing:0.02em; }
+  .hdr .sub { font-size:0.7rem; color:rgba(255,255,255,0.65); font-weight:400; letter-spacing:0.04em; }
+  .hdr-kpis { display:flex; gap:1.5rem; flex-wrap:wrap; }
+  .kpi { text-align:center; }
+  .kpi .v { font-size:1.1rem; font-weight:700; color:var(--gold); }
+  .kpi .d { font-size:0.58rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-dim); }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display:flex; gap:0.5rem; padding:0.65rem 1.5rem;
+    border-bottom:1px solid var(--border);
+    flex-wrap:wrap; align-items:center;
+    background:var(--navy-light);
+    position:sticky; top:var(--hdr-h,64px); z-index:15;
+  }
+  .toolbar input, .toolbar select {
+    background:var(--navy); border:1px solid var(--border);
+    color:var(--text); padding:0.35rem 0.55rem; border-radius:4px;
+    font-size:0.78rem; font-family:var(--font-sans);
+  }
+  .toolbar input { flex:1; min-width:180px; }
+  .toolbar select { min-width:130px; }
+  .toolbar input::placeholder { color:var(--text-dim); }
+  .toolbar input:focus, .toolbar select:focus { outline:none; border-color:var(--gold); }
+  .toolbar .year-wrap {
+    display:flex; align-items:center; gap:0.3rem;
+    font-size:0.75rem; color:var(--text-dim); white-space:nowrap;
+  }
+  .toolbar input[type=range] { width:80px; padding:0; border:none; background:transparent; accent-color:var(--gold); }
+  .toolbar .count { font-size:0.72rem; color:var(--text-dim); margin-left:auto; white-space:nowrap; }
+  .toolbar .btn-export {
+    background:transparent; border:1px solid var(--gold-dim);
+    color:var(--gold); padding:0.3rem 0.7rem; border-radius:4px;
+    font-size:0.72rem; font-weight:600; cursor:pointer; letter-spacing:0.05em;
+    text-transform:uppercase; transition:background 0.15s;
+  }
+  .toolbar .btn-export:hover { background:var(--gold-dim); }
+
+  /* ── Loading ── */
+  .loading {
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; padding:4rem 1.5rem; gap:1rem;
+  }
+  .spinner {
+    width:36px; height:36px; border-radius:50%;
+    border:3px solid var(--border);
+    border-top-color:var(--gold);
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-text { font-size:0.8rem; color:var(--text-dim); }
+  .load-error { color:#ef4444; font-size:0.82rem; text-align:center; padding:2rem; }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:0.8rem; table-layout:fixed; }
+  col.c-name { width:210px; }
+  col.c-recv { width:145px; }
+  col.c-inv  { width:145px; }
+  col.c-sc   { width:110px; }
+  col.c-val  { width:105px; }
+  col.c-yr   { width:68px; }
+  col.c-src  { width:110px; }
+  col.c-note { width:auto; min-width:200px; }
+  col.c-link { width:64px; }
+
+  thead { position:sticky; top:var(--sticky-top,120px); z-index:5; }
+  thead th {
+    text-align:left; padding:0.5rem 0.5rem; font-size:0.62rem;
+    text-transform:uppercase; letter-spacing:0.1em; color:var(--gold);
+    background:var(--navy-light); border-bottom:2px solid var(--gold);
+    cursor:pointer; white-space:nowrap; user-select:none;
+  }
+  thead th:hover { color:#e0b35a; }
+  thead th .arr { font-size:0.52rem; margin-left:0.2rem; opacity:0.35; }
+  thead th.on .arr { opacity:1; }
+  thead th.val-h { text-align:right; }
+
+  tbody tr { border-bottom:1px solid var(--border); transition:background 0.08s; }
+  tbody tr:nth-child(even) { background:var(--navy-row); }
+  tbody tr:hover { background:rgba(201,150,58,0.06); }
+  tbody td { padding:0.45rem 0.5rem; vertical-align:top; line-height:1.4; }
+
+  td.nm { font-weight:600; color:var(--cream); }
+  td.ct { font-size:0.78rem; word-break:break-word; }
+  td.sc { white-space:nowrap; font-size:0.75rem; color:var(--text-dim); }
+  td.vl { text-align:right; font-weight:600; color:var(--gold); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  td.yr { text-align:center; color:var(--text-dim); font-variant-numeric:tabular-nums; font-size:0.76rem; }
+  td.nt { font-size:0.74rem; color:var(--text-dim); }
+  td.lk a { color:var(--gold); text-decoration:none; font-size:0.65rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; }
+  td.lk a:hover { text-decoration:underline; }
+
+  /* Source badges */
+  .badge {
+    display:inline-block; font-size:0.58rem; font-weight:700;
+    letter-spacing:0.05em; text-transform:uppercase;
+    padding:0.15rem 0.4rem; border-radius:3px; border:1px solid; white-space:nowrap;
+  }
+  .badge-arg-curated { background:#C9963A22; color:#C9963A; border-color:#C9963A44; }
+.badge-us-dfc { background:#3B82F622; color:#3B82F6; border-color:#3B82F644; }
+.badge-aiib { background:#10B98122; color:#10B981; border-color:#10B98144; }
+.badge-world-bank { background:#8B5CF622; color:#8B5CF6; border-color:#8B5CF644; }
+.badge-aiddata { background:#F9731622; color:#F97316; border-color:#F9731644; }
+.badge-press { background:#EC489922; color:#EC4899; border-color:#EC489944; }
+  .badge-other { background:#ffffff10; color:#9CA3AF; border-color:#ffffff20; }
+
+  /* ── Collapsible sections ── */
+  .collapse-hdr {
+    display:flex; align-items:center; gap:0.5rem;
+    padding:1rem 1.5rem 0.6rem; cursor:pointer; user-select:none;
+  }
+  .collapse-hdr .label { font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); }
+  .collapse-hdr .chevron { font-size:0.58rem; color:var(--gold); transition:transform 0.2s; }
+  .collapse-hdr.open .chevron { transform:rotate(90deg); }
+  .collapse-body { display:none; padding:0 1.5rem 1.5rem; }
+  .collapse-body.show { display:block; }
+
+  /* ── Charts ── */
+  .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; }
+  @media(max-width:768px){ .charts-grid{grid-template-columns:1fr;} }
+  .cbox { background:var(--navy-light); border:1px solid var(--border); border-radius:6px; padding:0.9rem; }
+  .cbox h3 { font-size:0.76rem; color:var(--cream); margin-bottom:0.65rem; font-weight:600; }
+  .br { display:flex; align-items:center; margin-bottom:0.35rem; font-size:0.74rem; }
+  .br .bl { width:145px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .br .bt { flex:1; height:14px; background:rgba(255,255,255,0.04); border-radius:2px; margin:0 0.35rem; overflow:hidden; }
+  .br .bf { height:100%; background:linear-gradient(90deg,var(--gold),#e0b35a); border-radius:2px; }
+  .br .bv { width:65px; text-align:right; color:var(--gold); font-weight:600; font-size:0.68rem; }
+
+  .tl-row { display:flex; align-items:flex-end; gap:2px; height:80px; margin-top:0.35rem; overflow-x:auto; }
+  .tl-col { flex:0 0 auto; min-width:22px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
+  .tl-col .tb { width:100%; background:var(--gold); border-radius:2px 2px 0 0; min-height:1px; }
+  .tl-col .tc { font-size:0.5rem; color:var(--gold); margin-bottom:2px; font-weight:600; }
+  .tl-col .ty { font-size:0.46rem; color:var(--text-dim); margin-top:3px; writing-mode:vertical-lr; text-orientation:mixed; transform:rotate(180deg); height:2rem; }
+
+  /* ── Analysis ── */
+  .analysis { max-width:780px; }
+  .analysis h2 { font-family:var(--font-serif); font-size:1.1rem; color:var(--gold); margin:1.25rem 0 0.45rem; }
+  .analysis h2:first-child { margin-top:0; }
+  .analysis p { font-family:var(--font-serif); font-size:0.88rem; line-height:1.7; color:var(--text); margin-bottom:0.65rem; }
+  .analysis .callout {
+    background:rgba(201,150,58,0.06); border-left:3px solid var(--gold);
+    padding:0.65rem 0.9rem; margin:0.9rem 0; border-radius:0 4px 4px 0;
+  }
+  .analysis .callout p { margin:0; font-size:0.84rem; }
+
+  /* ── Pagination ── */
+  .pager {
+    display:flex; align-items:center; justify-content:center;
+    gap:0.4rem; padding:0.75rem 1.5rem;
+    border-top:1px solid var(--border);
+    flex-wrap:wrap;
+  }
+  .pager button {
+    background:transparent; border:1px solid var(--border);
+    color:var(--text-dim); padding:0.25rem 0.6rem; border-radius:3px;
+    font-size:0.72rem; cursor:pointer; min-width:2rem;
+    transition:background 0.12s, color 0.12s;
+  }
+  .pager button:hover { background:var(--gold-dim); color:var(--gold); }
+  .pager button.active { background:var(--gold-dim); color:var(--gold); border-color:var(--gold); font-weight:700; }
+  .pager button:disabled { opacity:0.3; cursor:default; }
+  .pager .pager-info { font-size:0.7rem; color:var(--text-dim); padding:0 0.5rem; }
+
+  /* ── Footer ── */
+  .ft {
+    text-align:center; padding:1rem 1.5rem; border-top:1px solid var(--border);
+    font-size:0.65rem; color:var(--text-dim);
+  }
+  .ft a { color:var(--gold); text-decoration:none; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="accentbar"></div>
+    <div class="hdr-titles">
+      <h1>Archimedes Research Group</h1>
+      <span class="sub">Global FDI &amp; Infrastructure Tracker</span>
+    </div>
+  </div>
+  <div class="hdr-kpis" id="kpis"></div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <input type="text" id="search" placeholder="Search deals, countries, notes…">
+  <select id="filter-investor"><option value="">All Investors</option><option value="Africa Development Bank">Africa Development Bank</option><option value="Azerbaijan">Azerbaijan</option><option value="Bangladesh (Domestic)">Bangladesh (Domestic)</option><option value="Canada">Canada</option><option value="Chevron">Chevron</option><option value="China">China</option><option value="China, Singapore">China, Singapore</option><option value="China, TotalEnergies">China, TotalEnergies</option><option value="EU">EU</option><option value="EU, Azerbaijan">EU, Azerbaijan</option><option value="EU, Japan">EU, Japan</option><option value="EU, United States">EU, United States</option><option value="Egypt (Domestic)">Egypt (Domestic)</option><option value="Ethiopia">Ethiopia</option><option value="France">France</option><option value="Fund / Multilateral">Fund / Multilateral</option><option value="Germany, EU">Germany, EU</option><option value="Japan, Brazil">Japan, Brazil</option><option value="Japan, South Korea">Japan, South Korea</option><option value="Kenya, China">Kenya, China</option><option value="Multilateral">Multilateral</option><option value="Netherlands">Netherlands</option><option value="Turkey">Turkey</option><option value="UAE, World Bank">UAE, World Bank</option><option value="United States">United States</option><option value="United States, Japan">United States, Japan</option><option value="World Bank">World Bank</option></select>
+  <select id="filter-region">  <option value="">All Regions</option><option value="Africa">Africa</option><option value="Americas">Americas</option><option value="Asia-Pacific">Asia-Pacific</option><option value="Central Asia">Central Asia</option><option value="Europe">Europe</option><option value="Latin America & Caribbean">Latin America & Caribbean</option><option value="MENA">MENA</option><option value="Other">Other</option><option value="Sub-Saharan Africa">Sub-Saharan Africa</option></select>
+  <select id="filter-sector">  <option value="">All Sectors</option><option value="Agriculture">Agriculture</option><option value="Digital">Digital</option><option value="Energy">Energy</option><option value="Finance">Finance</option><option value="Manufacturing">Manufacturing</option><option value="Natural Resources">Natural Resources</option><option value="Other">Other</option><option value="Social">Social</option><option value="Transport">Transport</option><option value="Water & Environment">Water & Environment</option></select>
+  <select id="filter-source">  <option value="">All Sources</option><option value="ARG Curated">ARG Curated</option><option value="ARG Press Scrape">ARG Press Scrape</option><option value="AidData (China)">AidData (China)</option><option value="US DFC">US DFC</option><option value="World Bank">World Bank</option></select>
+  <div class="year-wrap">
+    <span>From</span>
+    <input type="range" id="yr-from" min="1962" max="2026" value="1962" step="1">
+    <span id="yr-from-lbl">1962</span>
+    <span>–</span>
+    <input type="range" id="yr-to"   min="1962" max="2026" value="2026" step="1">
+    <span id="yr-to-lbl">2026</span>
+  </div>
+  <span class="count" id="result-count"></span>
+  <button class="btn-export" onclick="exportCSV()">&#11015; CSV</button>
+</div>
+
+<!-- PAGINATION -->
+<div class="pager" id="pager"></div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <table>
+    <colgroup>
+      <col class="c-name"><col class="c-recv"><col class="c-inv">
+      <col class="c-sc"><col class="c-val"><col class="c-yr">
+      <col class="c-src"><col class="c-note"><col class="c-link">
+    </colgroup>
+    <thead><tr>
+      <th data-col="nm">Deal Name <span class="arr">&#9662;</span></th>
+      <th data-col="rc">Recipient <span class="arr">&#9662;</span></th>
+      <th data-col="ic">Investor <span class="arr">&#9662;</span></th>
+      <th data-col="sc">Sector <span class="arr">&#9662;</span></th>
+      <th data-col="val" class="val-h">Value <span class="arr">&#9662;</span></th>
+      <th data-col="yr">Year <span class="arr">&#9662;</span></th>
+      <th data-col="src">Source <span class="arr">&#9662;</span></th>
+      <th data-col="nt">Notes <span class="arr">&#9662;</span></th>
+      <th>Link</th>
+    </tr></thead>
+    <tbody id="tbody">
+      <tr><td colspan="9">
+        <div class="loading">
+          <div class="spinner"></div>
+          <span class="loading-text">Loading deals…</span>
+        </div>
+      </td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="pager" id="pager-bottom"></div>
+
+<!-- ANALYTICS -->
+<div class="collapse-hdr" onclick="toggleSection(this)">
+  <span class="chevron">&#9654;</span>
+  <span class="label">Investment Analytics</span>
+</div>
+<div class="collapse-body">
+  <div class="charts-grid">
+    <div class="cbox"><h3>Top Recipient Regions</h3><div id="ch-region"></div></div>
+    <div class="cbox"><h3>By Sector (deal count)</h3><div id="ch-sector"></div></div>
+    <div class="cbox"><h3>Top Investing Entities</h3><div id="ch-investor"></div></div>
+    <div class="cbox"><h3>Top Recipient Countries</h3><div id="ch-country"></div></div>
+  </div>
+  <div class="cbox" style="margin-top:1.1rem;">
+    <h3>Deals by Year</h3><div id="ch-tl"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="collapse-hdr" onclick="toggleSection(this)">
+  <span class="chevron">&#9654;</span>
+  <span class="label">About This Tracker</span>
+</div>
+<div class="collapse-body">
+  <div class="analysis">
+    <h2>What Is Foreign Direct Investment?</h2>
+    <p>A foreign direct investment (FDI) is an investment in the form of a controlling ownership in a
+    business or project in one country by an entity based in another country. Unlike portfolio investment,
+    FDI implies direct operational control — building a port, financing a railway, or developing a power
+    plant. The distinction matters because FDI carries geopolitical weight that passive equity stakes do not.</p>
+
+    <h2>Why Track FDI Deals?</h2>
+    <p>Trade deals should be bilateral and mutually beneficial — the benefits and costs to each party should
+    be explicit in the nature of the deal. This tracker aggregates major global FDI and infrastructure
+    financing deals across multiple data sources: ARG curated deals, US Development Finance Corporation (DFC)
+    commitments, Asian Infrastructure Investment Bank (AIIB) approved projects, World Bank infrastructure
+    lending, and AidData's Global Chinese Development Finance dataset.</p>
+    <div class="callout"><p>China's outward FDI strategy in East Africa and Central Asia, channelled through
+    both bilateral deals and multilateral vehicles like AIIB, raises a critical question: should
+    infrastructure investment correlate with GDP growth in recipient countries, or does leveraged debt serve
+    primarily as a vehicle for political influence? The data here makes those patterns visible.</p></div>
+
+    <h2>Data Sources</h2>
+    <p>
+      <strong style="color:#C9963A">ARG Curated</strong> — Archimedes Research Group manually assembled list of major infrastructure deals.<br>
+      <strong style="color:#3B82F6">US DFC</strong> — Development Finance Corporation active transaction portfolio.<br>
+      <strong style="color:#10B981">AIIB</strong> — Asian Infrastructure Investment Bank approved projects.<br>
+      <strong style="color:#8B5CF6">World Bank</strong> — Infrastructure-focused lending above $50M since 2000.<br>
+      <strong style="color:#F97316">AidData</strong> — Global Chinese Development Finance Dataset v3.0 (2000–2021).
+    </p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="ft">
+  &copy; 2026 <a href="https://www.archimedesresearchgroup.com">Archimedes Research Group</a>
+  &nbsp;&middot;&nbsp; Data: ARG Curated, US DFC, AIIB, World Bank, AidData
+  &nbsp;&middot;&nbsp; Updated automatically via ARG data pipeline
+</div>
+
+
+<script>
+var DATA = [];
+var sortCol = 'yr', sortDir = -1;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fv(v) {
+  if (!v || v === 0) return '—';
+  if (v >= 1e12) return '$' + (v/1e12).toFixed(1) + 'T';
+  if (v >= 1e9)  return '$' + (v/1e9).toFixed(1)  + 'B';
+  if (v >= 1e6)  return '$' + (v/1e6).toFixed(0)  + 'M';
+  return '$' + v.toLocaleString();
+}
+
+var SOURCE_BADGE = {
+  'ARG Curated': 'arg-curated',
+  'US DFC':      'us-dfc',
+  'AIIB':        'aiib',
+  'World Bank':  'world-bank',
+  'AidData':     'aiddata',
+  'Press':       'press',
+};
+
+function badge(src) {
+  var cls = SOURCE_BADGE[src] || 'other';
+  return '<span class="badge badge-' + cls + '">' + src + '</span>';
+}
+
+// ── KPIs ──────────────────────────────────────────────────────────────────────
+function renderKPIs() {
+  var tot = DATA.reduce(function(s, d) { return s + (d.val || 0); }, 0);
+  var rc = new Set(), ic = new Set();
+  DATA.forEach(function(d) {
+    d.rc.split(',').forEach(function(c) { rc.add(c.trim()); });
+    d.ic.split(',').forEach(function(c) { ic.add(c.trim()); });
+  });
+  document.getElementById('kpis').innerHTML =
+    '<div class="kpi"><div class="v">' + DATA.length.toLocaleString() + '</div><div class="d">Deals</div></div>' +
+    '<div class="kpi"><div class="v">' + fv(tot) + '</div><div class="d">Total Value</div></div>' +
+    '<div class="kpi"><div class="v">' + rc.size + '</div><div class="d">Recipients</div></div>' +
+    '<div class="kpi"><div class="v">' + ic.size + '</div><div class="d">Investors</div></div>';
+}
+
+// ── Filters ───────────────────────────────────────────────────────────────────
+function getFilters() {
+  return {
+    q:   document.getElementById('search').value.toLowerCase().trim(),
+    inv: document.getElementById('filter-investor').value,
+    rg:  document.getElementById('filter-region').value,
+    sc:  document.getElementById('filter-sector').value,
+    src: document.getElementById('filter-source').value,
+    yrF: parseInt(document.getElementById('yr-from').value),
+    yrT: parseInt(document.getElementById('yr-to').value),
+  };
+}
+
+function filterData() {
+  var f = getFilters();
+  return DATA.filter(function(d) {
+    if (f.q) {
+      var hay = (d.nm + ' ' + d.rc + ' ' + d.ic + ' ' + d.rg + ' ' + d.sc + ' ' + d.nt + ' ' + d.src).toLowerCase();
+      if (!hay.includes(f.q)) return false;
+    }
+    if (f.inv && !d.ic.includes(f.inv)) return false;
+    if (f.rg  && d.rg !== f.rg)         return false;
+    if (f.sc  && d.sc !== f.sc)         return false;
+    if (f.src && d.src !== f.src)       return false;
+    if (d.yr && (d.yr < f.yrF || d.yr > f.yrT)) return false;
+    return true;
+  });
+}
+
+function sortData(arr) {
+  return arr.slice().sort(function(a, b) {
+    var va = a[sortCol], vb = b[sortCol];
+    if (va == null && vb == null) return 0;
+    if (va == null) return 1; if (vb == null) return -1;
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    if (va < vb) return -sortDir; if (va > vb) return sortDir; return 0;
+  });
+}
+
+// ── Render table (paginated) ──────────────────────────────────────────────────
+var PAGE_SIZE = 150;
+var currentPage = 0;
+var filteredCache = [];
+
+function renderPage(page) {
+  currentPage = page;
+  var start = page * PAGE_SIZE;
+  var slice = filteredCache.slice(start, start + PAGE_SIZE);
+  var html = slice.map(function(d) {
+    var lk = d.url && d.url.startsWith('http')
+      ? '<a href="' + d.url + '" target="_blank" rel="noopener">&#8599;</a>' : '';
+    return '<tr>' +
+      '<td class="nm">' + d.nm + '</td>' +
+      '<td class="ct">' + d.rc + '</td>' +
+      '<td class="ct">' + d.ic + '</td>' +
+      '<td class="sc">' + d.sc + '</td>' +
+      '<td class="vl">' + fv(d.val) + '</td>' +
+      '<td class="yr">' + (d.yr || '—') + '</td>' +
+      '<td class="ct">' + badge(d.src) + '</td>' +
+      '<td class="nt">' + d.nt + '</td>' +
+      '<td class="lk">' + lk + '</td>' +
+      '</tr>';
+  }).join('');
+  document.getElementById('tbody').innerHTML = html ||
+    '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-dim)">No deals match the current filters.</td></tr>';
+  renderPager();
+}
+
+function renderPager() {
+  var total = filteredCache.length;
+  var pages = Math.ceil(total / PAGE_SIZE);
+  var el = document.getElementById('pager');
+  if (pages <= 1) { el.innerHTML = ''; return; }
+
+  var p = currentPage;
+  var html = '<button onclick="renderPage(' + Math.max(0,p-1) + ')"' + (p===0?' disabled':'') + '>&#8249; Prev</button>';
+
+  // Show window of page buttons around current page
+  var lo = Math.max(0, p-2), hi = Math.min(pages-1, p+2);
+  if (lo > 0) html += '<button onclick="renderPage(0)">1</button>' + (lo>1?'<span class="pager-info">…</span>':'');
+  for (var i=lo; i<=hi; i++) {
+    html += '<button onclick="renderPage(' + i + ')"' + (i===p?' class="active"':'') + '>' + (i+1) + '</button>';
+  }
+  if (hi < pages-1) html += (hi<pages-2?'<span class="pager-info">…</span>':'') + '<button onclick="renderPage(' + (pages-1) + ')">' + pages + '</button>';
+
+  html += '<button onclick="renderPage(' + Math.min(pages-1,p+1) + ')"' + (p===pages-1?' disabled':'') + '>Next &#8250;</button>';
+  html += '<span class="pager-info">Showing ' + (p*PAGE_SIZE+1).toLocaleString() + '–' + Math.min((p+1)*PAGE_SIZE,total).toLocaleString() + ' of ' + total.toLocaleString() + '</span>';
+  el.innerHTML = html;
+  var elB = document.getElementById('pager-bottom');
+  if (elB) elB.innerHTML = html;
+}
+
+function render() {
+  filteredCache = sortData(filterData());
+  currentPage = 0;
+  document.getElementById('result-count').textContent =
+    filteredCache.length.toLocaleString() + ' of ' + DATA.length.toLocaleString() + ' deals';
+  renderPage(0);
+}
+
+// ── Sort headers ──────────────────────────────────────────────────────────────
+document.querySelectorAll('thead th[data-col]').forEach(function(th) {
+  th.addEventListener('click', function() {
+    var c = this.getAttribute('data-col');
+    if (sortCol === c) sortDir *= -1; else { sortCol = c; sortDir = 1; }
+    document.querySelectorAll('thead th').forEach(function(t) {
+      t.classList.remove('on');
+      if (t.querySelector('.arr')) t.querySelector('.arr').innerHTML = '&#9662;';
+    });
+    this.classList.add('on');
+    if (this.querySelector('.arr'))
+      this.querySelector('.arr').innerHTML = sortDir === 1 ? '&#9652;' : '&#9662;';
+    render();
+  });
+});
+
+['search','filter-investor','filter-region','filter-sector','filter-source'].forEach(function(id) {
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+});
+
+['yr-from','yr-to'].forEach(function(id) {
+  document.getElementById(id).addEventListener('input', function() {
+    document.getElementById(id + '-lbl').textContent = this.value;
+    render();
+  });
+});
+
+// ── Charts ────────────────────────────────────────────────────────────────────
+function topN(field, n) {
+  var c = {};
+  DATA.forEach(function(d) {
+    var v = d[field] || 'Unknown';
+    v.split(',').forEach(function(x) { x = x.trim(); if (x) c[x] = (c[x] || 0) + 1; });
+  });
+  return Object.entries(c).sort(function(a, b) { return b[1] - a[1]; }).slice(0, n);
+}
+
+function bars(id, data) {
+  if (!data.length) return;
+  var mx = data[0][1];
+  document.getElementById(id).innerHTML = data.map(function(d) {
+    return '<div class="br"><span class="bl" title="' + d[0] + '">' + d[0] + '</span>' +
+      '<div class="bt"><div class="bf" style="width:' + (d[1]/mx*100).toFixed(1) + '%"></div></div>' +
+      '<span class="bv">' + d[1] + '</span></div>';
+  }).join('');
+}
+
+function renderCharts() {
+  bars('ch-region',   topN('rg', 8));
+  bars('ch-sector',   topN('sc', 8));
+  bars('ch-investor', topN('ie', 8));
+  bars('ch-country',  topN('rc', 8));
+
+  var by = {};
+  DATA.forEach(function(d) { if (d.yr) by[d.yr] = (by[d.yr] || 0) + 1; });
+  var ys = Object.keys(by).sort();
+  if (!ys.length) return;
+  var mx = Math.max.apply(null, Object.values(by));
+  document.getElementById('ch-tl').innerHTML =
+    '<div class="tl-row">' + ys.map(function(y) {
+      return '<div class="tl-col">' +
+        '<span class="tc">' + by[y] + '</span>' +
+        '<div class="tb" style="height:' + (by[y]/mx*100) + '%" title="' + y + ': ' + by[y] + '"></div>' +
+        '<span class="ty">' + y + '</span></div>';
+    }).join('') + '</div>';
+}
+
+// ── Export CSV ────────────────────────────────────────────────────────────────
+function exportCSV() {
+  var rows = filterData();
+  var cols = ['deal_name','investor_country','investor_entity','recipient_country',
+              'region','sector','deal_type','value_usd','start_year','source_db','source_url','notes'];
+  var map = {'deal_name':'nm','investor_country':'ic','investor_entity':'ie',
+              'recipient_country':'rc','region':'rg','sector':'sc','deal_type':'dt',
+              'value_usd':'val','start_year':'yr','source_db':'src',
+              'source_url':'url','notes':'nt'};
+  var csv = [cols.join(',')].concat(rows.map(function(r) {
+    return cols.map(function(c) {
+      var v = String(r[map[c]] || '').replace(/"/g, '""');
+      return (v.includes(',') || v.includes('"') || v.includes('\n')) ? '"' + v + '"' : v;
+    }).join(',');
+  })).join('\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'ARG_FDI_Tracker.csv';
+  a.click();
+}
+
+// ── Collapse toggle ───────────────────────────────────────────────────────────
+function toggleSection(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('show');
+}
+
+// ── Sticky offset ─────────────────────────────────────────────────────────────
+function updateStickyTop() {
+  var hdr     = document.querySelector('.hdr');
+  var toolbar = document.querySelector('.toolbar');
+  var hdrH    = hdr     ? hdr.offsetHeight     : 64;
+  var toolbarH= toolbar ? toolbar.offsetHeight  : 56;
+  document.documentElement.style.setProperty('--hdr-h',     hdrH + 'px');
+  document.documentElement.style.setProperty('--sticky-top', (hdrH + toolbarH) + 'px');
+}
+window.addEventListener('resize', updateStickyTop);
+updateStickyTop();
+
+// ── Load data ─────────────────────────────────────────────────────────────────
+fetch('fdi_deals.json')
+  .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(function(data) { DATA = data; renderKPIs(); render(); renderCharts(); })
+  .catch(function(e) {
+    document.getElementById('tbody').innerHTML =
+      '<tr><td colspan="9"><div class="load-error">&#9888; Failed to load data: ' + e.message + '</div></td></tr>';
+  });
+</script>
+</body>
+</html>
