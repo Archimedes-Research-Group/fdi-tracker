@@ -554,9 +554,11 @@ function exportCSV() {
   var csv = [cols.join(',')].concat(rows.map(function(r) {
     return cols.map(function(c) {
       var v = String(r[map[c]] || '').replace(/"/g, '""');
-      return (v.includes(',') || v.includes('"') || v.includes('\n')) ? '"' + v + '"' : v;
+      return (v.includes(',') || v.includes('"') || v.includes('
+')) ? '"' + v + '"' : v;
     }).join(',');
-  })).join('\n');
+  })).join('
+');
   var a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
   a.download = 'ARG_FDI_Tracker.csv';
