@@ -121,7 +121,8 @@
   thead th:hover { color:#e0b35a; }
   thead th .arr { font-size:0.52rem; margin-left:0.2rem; opacity:0.35; }
   thead th.on .arr { opacity:1; }
-  thead th.val-h { text-align:right; }
+  thead th.val-h { text-align:center; }
+  thead th.yr-h  { text-align:center; }
 
   tbody tr { border-bottom:1px solid var(--border); transition:background 0.08s; }
   tbody tr:nth-child(even) { background:var(--navy-row); }
@@ -131,7 +132,7 @@
   td.nm { font-weight:600; color:var(--cream); }
   td.ct { font-size:0.78rem; word-break:break-word; }
   td.sc { font-size:0.75rem; color:var(--text-dim); word-break:break-word; }
-  td.vl { text-align:right; font-weight:600; color:var(--gold); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  td.vl { text-align:center; font-weight:600; color:var(--gold); white-space:nowrap; font-variant-numeric:tabular-nums; }
   td.yr { text-align:center; color:var(--text-dim); font-variant-numeric:tabular-nums; font-size:0.76rem; }
   td.nt { font-size:0.74rem; color:var(--text-dim); }
   td.lk a { color:var(--gold); text-decoration:none; font-size:0.65rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; }
@@ -273,7 +274,7 @@
       <th data-col="ic">Investor <span class="arr">&#9662;</span></th>
       <th data-col="sc">Sector <span class="arr">&#9662;</span></th>
       <th data-col="val" class="val-h">Value <span class="arr">&#9662;</span></th>
-      <th data-col="yr">Year <span class="arr">&#9662;</span></th>
+      <th data-col="yr" class="yr-h">Year <span class="arr">&#9662;</span></th>
       <th data-col="src">Source <span class="arr">&#9662;</span></th>
       <th data-col="nt">Notes <span class="arr">&#9662;</span></th>
       <th>Link</th>
