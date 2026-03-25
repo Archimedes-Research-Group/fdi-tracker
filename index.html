@@ -237,7 +237,6 @@
   <select id="filter-investor"><option value="">All Investors</option><option value="Africa Development Bank">Africa Development Bank</option><option value="Azerbaijan">Azerbaijan</option><option value="Bangladesh (Domestic)">Bangladesh (Domestic)</option><option value="Canada">Canada</option><option value="China">China</option><option value="China, Singapore">China, Singapore</option><option value="China, TotalEnergies">China, TotalEnergies</option><option value="EU">EU</option><option value="EU, Azerbaijan">EU, Azerbaijan</option><option value="EU, Japan">EU, Japan</option><option value="EU, United States">EU, United States</option><option value="Egypt (Domestic)">Egypt (Domestic)</option><option value="Ethiopia">Ethiopia</option><option value="France">France</option><option value="Fund / Multilateral">Fund / Multilateral</option><option value="Germany, EU">Germany, EU</option><option value="Japan, Brazil">Japan, Brazil</option><option value="Japan, South Korea">Japan, South Korea</option><option value="Kenya, China">Kenya, China</option><option value="Netherlands">Netherlands</option><option value="Turkey">Turkey</option><option value="UAE, World Bank">UAE, World Bank</option><option value="United States">United States</option><option value="United States, Japan">United States, Japan</option><option value="World Bank">World Bank</option></select>
   <select id="filter-region">  <option value="">All Regions</option><option value="Africa">Africa</option><option value="Americas">Americas</option><option value="Asia-Pacific">Asia-Pacific</option><option value="Central Asia">Central Asia</option><option value="Europe">Europe</option><option value="Latin America & Caribbean">Latin America & Caribbean</option><option value="MENA">MENA</option><option value="Other">Other</option></select>
   <select id="filter-sector">  <option value="">All Sectors</option><option value="Agriculture">Agriculture</option><option value="Digital">Digital</option><option value="Energy">Energy</option><option value="Finance">Finance</option><option value="Manufacturing">Manufacturing</option><option value="Natural Resources">Natural Resources</option><option value="Other">Other</option><option value="Social">Social</option><option value="Transport">Transport</option><option value="Water & Environment">Water & Environment</option></select>
-  <select id="filter-source">  <option value="">All Sources</option><option value="ARG Curated">ARG Curated</option><option value="ARG Press Scrape">ARG Press Scrape</option><option value="AidData (China)">AidData (China)</option><option value="US DFC">US DFC</option></select>
 <div class="year-wrap">
     <span>From</span>
     <select id="yr-from"><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2026">2026</option></select>
@@ -266,7 +265,7 @@
     <colgroup>
       <col class="c-name"><col class="c-recv"><col class="c-inv">
       <col class="c-sc"><col class="c-val"><col class="c-yr">
-      <col class="c-src"><col class="c-note"><col class="c-link">
+      <col class="c-note"><col class="c-link">
     </colgroup>
     <thead><tr>
       <th data-col="nm">Deal Name <span class="arr">&#9662;</span></th>
@@ -275,12 +274,11 @@
       <th data-col="sc">Sector <span class="arr">&#9662;</span></th>
       <th data-col="val" class="val-h">Value <span class="arr">&#9662;</span></th>
       <th data-col="yr" class="yr-h">Year <span class="arr">&#9662;</span></th>
-      <th data-col="src">Source <span class="arr">&#9662;</span></th>
       <th data-col="nt">Notes <span class="arr">&#9662;</span></th>
       <th>Link</th>
     </tr></thead>
     <tbody id="tbody">
-      <tr><td colspan="9">
+      <tr><td colspan="8">
         <div class="loading">
           <div class="spinner"></div>
           <span class="loading-text">Loading deals…</span>
@@ -400,7 +398,6 @@ function getFilters() {
     inv: document.getElementById('filter-investor').value,
     rg:  document.getElementById('filter-region').value,
     sc:  document.getElementById('filter-sector').value,
-    src: document.getElementById('filter-source').value,
     yrF: parseInt(document.getElementById('yr-from').value) || 0,
     yrT: parseInt(document.getElementById('yr-to').value) || 9999,
   };
@@ -416,7 +413,6 @@ function filterData() {
     if (f.inv && !d.ic.includes(f.inv)) return false;
     if (f.rg  && d.rg !== f.rg)         return false;
     if (f.sc  && d.sc !== f.sc)         return false;
-    if (f.src && d.src !== f.src)       return false;
     if (d.yr && (d.yr < f.yrF || d.yr > f.yrT)) return false;
     return true;
   });
@@ -452,13 +448,12 @@ function renderPage(page) {
       '<td class="sc">' + d.sc + '</td>' +
       '<td class="vl">' + fv(d.val) + '</td>' +
       '<td class="yr">' + (d.yr || '—') + '</td>' +
-      '<td class="ct">' + badge(d.src) + '</td>' +
       '<td class="nt">' + d.nt + '</td>' +
       '<td class="lk">' + lk + '</td>' +
       '</tr>';
   }).join('');
   document.getElementById('tbody').innerHTML = html ||
-    '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-dim)">No deals match the current filters.</td></tr>';
+    '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-dim)">No deals match the current filters.</td></tr>';
   renderPager();
 }
 
@@ -510,7 +505,7 @@ document.querySelectorAll('thead th[data-col]').forEach(function(th) {
   });
 });
 
-['search','filter-investor','filter-region','filter-sector','filter-source','yr-from','yr-to'].forEach(function(id) {
+['search','filter-investor','filter-region','filter-sector','yr-from','yr-to'].forEach(function(id) {
   document.getElementById(id).addEventListener('input', render);
   document.getElementById(id).addEventListener('change', render);
 });
@@ -617,7 +612,7 @@ fetch('fdi_deals.json')
   .then(function(data) { DATA = data; renderKPIs(); render(); renderCharts(); })
   .catch(function(e) {
     document.getElementById('tbody').innerHTML =
-      '<tr><td colspan="9"><div class="load-error">&#9888; Failed to load data: ' + e.message + '</div></td></tr>';
+      '<tr><td colspan="8"><div class="load-error">&#9888; Failed to load data: ' + e.message + '</div></td></tr>';
   });
 </script>
 </body>
