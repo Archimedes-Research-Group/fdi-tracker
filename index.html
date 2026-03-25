@@ -99,7 +99,7 @@
   .load-error { color:#ef4444; font-size:0.82rem; text-align:center; padding:2rem; }
 
   /* ── Table ── */
-  .table-wrap { overflow-x:auto; }
+  .table-wrap { overflow-x:clip; }
   table { width:100%; border-collapse:collapse; font-size:0.8rem; table-layout:fixed; }
   col.c-name { width:210px; }
   col.c-recv { width:145px; }
@@ -111,7 +111,7 @@
   col.c-note { width:auto; min-width:200px; }
   col.c-link { width:64px; }
 
-  thead { position:sticky; top:var(--sticky-top,120px); z-index:5; }
+  thead { position:sticky; top:var(--sticky-top,120px); z-index:10; }
   thead th {
     text-align:left; padding:0.5rem 0.5rem; font-size:0.62rem;
     text-transform:uppercase; letter-spacing:0.1em; color:var(--gold);
@@ -583,9 +583,11 @@ function exportCSV() {
   var csv = [cols.join(',')].concat(rows.map(function(r) {
     return cols.map(function(c) {
       var v = String(r[map[c]] || '').replace(/"/g, '""');
-      return (v.includes(',') || v.includes('"') || v.includes('\n')) ? '"' + v + '"' : v;
+      return (v.includes(',') || v.includes('"') || v.includes('
+')) ? '"' + v + '"' : v;
     }).join(',');
-  })).join('\n');
+  })).join('
+');
   var a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
   a.download = 'ARG_FDI_Tracker.csv';
