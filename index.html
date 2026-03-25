@@ -61,7 +61,13 @@
     display:flex; align-items:center; gap:0.3rem;
     font-size:0.75rem; color:var(--text-dim); white-space:nowrap;
   }
-  .toolbar input[type=range] { width:80px; padding:0; border:none; background:transparent; accent-color:var(--gold); }
+  .toolbar .year-wrap select {
+    background:var(--navy); border:1px solid var(--border);
+    color:var(--text); padding:0.25rem 0.3rem; border-radius:4px;
+    font-size:0.75rem; font-family:var(--font-sans); min-width:70px;
+  }
+  .toolbar .year-wrap select:focus { outline:none; border-color:var(--gold); }
+  .toolbar .year-wrap { display:flex; align-items:center; gap:0.4rem; font-size:0.75rem; color:var(--text-dim); white-space:nowrap; }
   .toolbar .count { font-size:0.72rem; color:var(--text-dim); margin-left:auto; white-space:nowrap; }
   .toolbar .btn-export {
     background:transparent; border:1px solid var(--gold-dim);
@@ -70,6 +76,12 @@
     text-transform:uppercase; transition:background 0.15s;
   }
   .toolbar .btn-export:hover { background:var(--gold-dim); }
+
+  /* ── Intro ── */
+  .intro {
+    padding:0.65rem 1.5rem; font-size:0.78rem; color:var(--text-dim);
+    line-height:1.6; border-bottom:1px solid var(--border);
+  }
 
   /* ── Loading ── */
   .loading {
@@ -221,20 +233,27 @@
 <!-- TOOLBAR -->
 <div class="toolbar">
   <input type="text" id="search" placeholder="Search deals, countries, notes…">
-  <select id="filter-investor"><option value="">All Investors</option><option value="Africa Development Bank">Africa Development Bank</option><option value="Azerbaijan">Azerbaijan</option><option value="Bangladesh (Domestic)">Bangladesh (Domestic)</option><option value="Canada">Canada</option><option value="Chevron">Chevron</option><option value="China">China</option><option value="China, Singapore">China, Singapore</option><option value="China, TotalEnergies">China, TotalEnergies</option><option value="EU">EU</option><option value="EU, Azerbaijan">EU, Azerbaijan</option><option value="EU, Japan">EU, Japan</option><option value="EU, United States">EU, United States</option><option value="Egypt (Domestic)">Egypt (Domestic)</option><option value="Ethiopia">Ethiopia</option><option value="France">France</option><option value="Fund / Multilateral">Fund / Multilateral</option><option value="Germany, EU">Germany, EU</option><option value="Japan, Brazil">Japan, Brazil</option><option value="Japan, South Korea">Japan, South Korea</option><option value="Kenya, China">Kenya, China</option><option value="Multilateral">Multilateral</option><option value="Netherlands">Netherlands</option><option value="Turkey">Turkey</option><option value="UAE, World Bank">UAE, World Bank</option><option value="United States">United States</option><option value="United States, Japan">United States, Japan</option><option value="World Bank">World Bank</option></select>
-  <select id="filter-region">  <option value="">All Regions</option><option value="Africa">Africa</option><option value="Americas">Americas</option><option value="Asia-Pacific">Asia-Pacific</option><option value="Central Asia">Central Asia</option><option value="Europe">Europe</option><option value="Latin America & Caribbean">Latin America & Caribbean</option><option value="MENA">MENA</option><option value="Other">Other</option><option value="Sub-Saharan Africa">Sub-Saharan Africa</option></select>
+  <select id="filter-investor"><option value="">All Investors</option><option value="Africa Development Bank">Africa Development Bank</option><option value="Azerbaijan">Azerbaijan</option><option value="Bangladesh (Domestic)">Bangladesh (Domestic)</option><option value="Canada">Canada</option><option value="China">China</option><option value="China, Singapore">China, Singapore</option><option value="China, TotalEnergies">China, TotalEnergies</option><option value="EU">EU</option><option value="EU, Azerbaijan">EU, Azerbaijan</option><option value="EU, Japan">EU, Japan</option><option value="EU, United States">EU, United States</option><option value="Egypt (Domestic)">Egypt (Domestic)</option><option value="Ethiopia">Ethiopia</option><option value="France">France</option><option value="Fund / Multilateral">Fund / Multilateral</option><option value="Germany, EU">Germany, EU</option><option value="Japan, Brazil">Japan, Brazil</option><option value="Japan, South Korea">Japan, South Korea</option><option value="Kenya, China">Kenya, China</option><option value="Netherlands">Netherlands</option><option value="Turkey">Turkey</option><option value="UAE, World Bank">UAE, World Bank</option><option value="United States">United States</option><option value="United States, Japan">United States, Japan</option><option value="World Bank">World Bank</option></select>
+  <select id="filter-region">  <option value="">All Regions</option><option value="Africa">Africa</option><option value="Americas">Americas</option><option value="Asia-Pacific">Asia-Pacific</option><option value="Central Asia">Central Asia</option><option value="Europe">Europe</option><option value="Latin America & Caribbean">Latin America & Caribbean</option><option value="MENA">MENA</option><option value="Other">Other</option></select>
   <select id="filter-sector">  <option value="">All Sectors</option><option value="Agriculture">Agriculture</option><option value="Digital">Digital</option><option value="Energy">Energy</option><option value="Finance">Finance</option><option value="Manufacturing">Manufacturing</option><option value="Natural Resources">Natural Resources</option><option value="Other">Other</option><option value="Social">Social</option><option value="Transport">Transport</option><option value="Water & Environment">Water & Environment</option></select>
-  <select id="filter-source">  <option value="">All Sources</option><option value="ARG Curated">ARG Curated</option><option value="ARG Press Scrape">ARG Press Scrape</option><option value="AidData (China)">AidData (China)</option><option value="US DFC">US DFC</option><option value="World Bank">World Bank</option></select>
-  <div class="year-wrap">
+  <select id="filter-source">  <option value="">All Sources</option><option value="ARG Curated">ARG Curated</option><option value="ARG Press Scrape">ARG Press Scrape</option><option value="AidData (China)">AidData (China)</option><option value="US DFC">US DFC</option></select>
+<div class="year-wrap">
     <span>From</span>
-    <input type="range" id="yr-from" min="1962" max="2026" value="1962" step="1">
-    <span id="yr-from-lbl">1962</span>
-    <span>–</span>
-    <input type="range" id="yr-to"   min="1962" max="2026" value="2026" step="1">
-    <span id="yr-to-lbl">2026</span>
+    <select id="yr-from"><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2026">2026</option></select>
+    <span>&ndash;</span>
+    <select id="yr-to"><option value="">2026</option><option value="2026">2026</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option><option value="2019">2019</option><option value="2018">2018</option><option value="2017">2017</option><option value="2016">2016</option><option value="2015">2015</option><option value="2014">2014</option><option value="2013">2013</option><option value="2012">2012</option><option value="2011">2011</option><option value="2010">2010</option></select>
   </div>
   <span class="count" id="result-count"></span>
   <button class="btn-export" onclick="exportCSV()">&#11015; CSV</button>
+</div>
+
+<!-- INTRO -->
+<div class="intro">
+  This tracker aggregates major infrastructure and foreign direct investment deals across
+  multiple sources — including the US Development Finance Corporation (DFC), Asian
+  Infrastructure Investment Bank (AIIB), World Bank, AidData's Global Chinese Development
+  Finance dataset, and ARG's own curated deal list. Use the filters above to explore by
+  investor, region, sector, source, or year.
 </div>
 
 <!-- PAGINATION -->
@@ -381,8 +400,8 @@ function getFilters() {
     rg:  document.getElementById('filter-region').value,
     sc:  document.getElementById('filter-sector').value,
     src: document.getElementById('filter-source').value,
-    yrF: parseInt(document.getElementById('yr-from').value),
-    yrT: parseInt(document.getElementById('yr-to').value),
+    yrF: parseInt(document.getElementById('yr-from').value) || 0,
+    yrT: parseInt(document.getElementById('yr-to').value) || 9999,
   };
 }
 
@@ -490,17 +509,27 @@ document.querySelectorAll('thead th[data-col]').forEach(function(th) {
   });
 });
 
-['search','filter-investor','filter-region','filter-sector','filter-source'].forEach(function(id) {
+['search','filter-investor','filter-region','filter-sector','filter-source','yr-from','yr-to'].forEach(function(id) {
   document.getElementById(id).addEventListener('input', render);
   document.getElementById(id).addEventListener('change', render);
 });
 
+// Populate year dropdowns
+(function() {
+  var fromSel = document.getElementById('yr-from');
+  var toSel   = document.getElementById('yr-to');
+  for (var y = 2000; y <= 2026; y++) {
+    fromSel.add(new Option(y, y));
+    toSel.add(new Option(y, y));
+  }
+  fromSel.value = '2000';
+  toSel.value   = '2026';
+})();
+
 ['yr-from','yr-to'].forEach(function(id) {
-  document.getElementById(id).addEventListener('input', function() {
-    document.getElementById(id + '-lbl').textContent = this.value;
-    render();
-  });
+  document.getElementById(id).addEventListener('change', render);
 });
+
 
 // ── Charts ────────────────────────────────────────────────────────────────────
 function topN(field, n) {
