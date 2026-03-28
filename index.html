@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Global FDI Tracker — Archimedes Research Group</title>
+<title>Global FDI Tracker â Archimedes Research Group</title>
 <style>
   :root {
     --navy:       #0D1F3C;
@@ -22,7 +22,7 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--navy); color:var(--text); font-family:var(--font-sans); }
 
-  /* ── Header ── */
+  /* ââ Header ââ */
   .hdr {
     display:flex; align-items:center; justify-content:space-between;
     padding:1rem 1.5rem; border-bottom:1px solid var(--gold-dim);
@@ -40,7 +40,7 @@
   .kpi .v { font-size:1.1rem; font-weight:700; color:var(--gold); }
   .kpi .d { font-size:0.58rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-dim); }
 
-  /* ── Toolbar ── */
+  /* ââ Toolbar ââ */
   .toolbar {
     display:flex; gap:0.5rem; padding:0.65rem 1.5rem;
     border-bottom:1px solid var(--border);
@@ -77,13 +77,13 @@
   }
   .toolbar .btn-export:hover { background:var(--gold-dim); }
 
-  /* ── Intro ── */
+  /* ââ Intro ââ */
   .intro {
     padding:0.65rem 1.5rem; font-size:0.78rem; color:var(--text-dim);
     line-height:1.6; border-bottom:1px solid var(--border);
   }
 
-  /* ── Loading ── */
+  /* ââ Loading ââ */
   .loading {
     display:flex; flex-direction:column; align-items:center;
     justify-content:center; padding:4rem 1.5rem; gap:1rem;
@@ -98,7 +98,7 @@
   .loading-text { font-size:0.8rem; color:var(--text-dim); }
   .load-error { color:#ef4444; font-size:0.82rem; text-align:center; padding:2rem; }
 
-  /* ── Table ── */
+  /* ââ Table ââ */
   .table-wrap { overflow-x:clip; }
   table { width:100%; border-collapse:collapse; font-size:0.8rem; table-layout:fixed; }
   col.c-name { width:210px; }
@@ -152,7 +152,7 @@
 .badge-press { background:#EC489922; color:#EC4899; border-color:#EC489944; }
   .badge-other { background:#ffffff10; color:#9CA3AF; border-color:#ffffff20; }
 
-  /* ── Collapsible sections ── */
+  /* ââ Collapsible sections ââ */
   .collapse-hdr {
     display:flex; align-items:center; gap:0.5rem;
     padding:1rem 1.5rem 0.6rem; cursor:pointer; user-select:none;
@@ -163,9 +163,89 @@
   .collapse-body { display:none; padding:0 1.5rem 1.5rem; }
   .collapse-body.show { display:block; }
 
-  /* ── Charts ── */
+  /* ââ Charts ââ */
   .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; }
-  @media(max-width:768px){ .charts-grid{grid-template-columns:1fr;} }
+  @media (max-width: 768px) {
+    /* Toolbar / Filters - stack vertically */
+    .toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.4rem;
+      padding: 0.5rem 0.75rem;
+    }
+    .toolbar input {
+      width: 100%;
+      min-width: 0;
+      font-size: 0.85rem;
+      padding: 0.5rem;
+      box-sizing: border-box;
+    }
+    .toolbar select {
+      width: 100%;
+      min-width: 0;
+      font-size: 0.85rem;
+      padding: 0.45rem 0.5rem;
+      box-sizing: border-box;
+    }
+    .toolbar .year-wrap {
+      width: 100%;
+    }
+    .toolbar .year-wrap select {
+      flex: 1;
+      min-width: 0;
+    }
+    .toolbar .count {
+      font-size: 0.72rem;
+      text-align: center;
+    }
+    .toolbar .btn-export {
+      width: 100%;
+      padding: 0.5rem;
+    }
+    /* Header - stack vertically */
+    .hdr {
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      text-align: center;
+    }
+    .hdr .stats {
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    /* Table - horizontal scroll, hide Notes & Link columns */
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table {
+      table-layout: auto;
+      min-width: 500px;
+      font-size: 0.72rem;
+    }
+    thead th:nth-child(7), thead th:nth-child(8),
+    tbody td.nt, tbody td.lk,
+    col.c-note, col.c-link {
+      display: none;
+    }
+    thead th { font-size: 0.58rem; padding: 0.4rem 0.3rem; }
+    tbody td { padding: 0.35rem 0.3rem; font-size: 0.72rem; }
+    /* Pagination */
+    .pagination {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.3rem;
+      font-size: 0.75rem;
+    }
+    /* Description */
+    .desc {
+      font-size: 0.78rem;
+      padding: 0.75rem;
+    }
+    /* Charts */
+    .charts-grid { grid-template-columns: 1fr; }
+  }
   .cbox { background:var(--navy-light); border:1px solid var(--border); border-radius:6px; padding:0.9rem; }
   .cbox h3 { font-size:0.76rem; color:var(--cream); margin-bottom:0.65rem; font-weight:600; }
   .br { display:flex; align-items:center; margin-bottom:0.35rem; font-size:0.74rem; }
@@ -180,7 +260,7 @@
   .tl-col .tc { font-size:0.5rem; color:var(--gold); margin-bottom:2px; font-weight:600; }
   .tl-col .ty { font-size:0.46rem; color:var(--text-dim); margin-top:3px; writing-mode:vertical-lr; text-orientation:mixed; transform:rotate(180deg); height:2rem; }
 
-  /* ── Analysis ── */
+  /* ââ Analysis ââ */
   .analysis { max-width:780px; }
   .analysis h2 { font-family:var(--font-serif); font-size:1.1rem; color:var(--gold); margin:1.25rem 0 0.45rem; }
   .analysis h2:first-child { margin-top:0; }
@@ -191,7 +271,7 @@
   }
   .analysis .callout p { margin:0; font-size:0.84rem; }
 
-  /* ── Pagination ── */
+  /* ââ Pagination ââ */
   .pager {
     display:flex; align-items:center; justify-content:center;
     gap:0.4rem; padding:0.75rem 1.5rem;
@@ -209,7 +289,7 @@
   .pager button:disabled { opacity:0.3; cursor:default; }
   .pager .pager-info { font-size:0.7rem; color:var(--text-dim); padding:0 0.5rem; }
 
-  /* ── Footer ── */
+  /* ââ Footer ââ */
   .ft {
     text-align:center; padding:1rem 1.5rem; border-top:1px solid var(--border);
     font-size:0.65rem; color:var(--text-dim);
@@ -233,7 +313,7 @@
 
 <!-- TOOLBAR -->
 <div class="toolbar">
-  <input type="text" id="search" placeholder="Search deals, countries, notes…">
+  <input type="text" id="search" placeholder="Search deals, countries, notesâ¦">
   <select id="filter-investor"><option value="">All Investors</option><option value="Africa Development Bank">Africa Development Bank</option><option value="Azerbaijan">Azerbaijan</option><option value="Bangladesh (Domestic)">Bangladesh (Domestic)</option><option value="Canada">Canada</option><option value="China">China</option><option value="China, Singapore">China, Singapore</option><option value="China, TotalEnergies">China, TotalEnergies</option><option value="EU">EU</option><option value="EU, Azerbaijan">EU, Azerbaijan</option><option value="EU, Japan">EU, Japan</option><option value="EU, United States">EU, United States</option><option value="Egypt (Domestic)">Egypt (Domestic)</option><option value="Ethiopia">Ethiopia</option><option value="European Union">European Union</option><option value="France">France</option><option value="Fund / Multilateral">Fund / Multilateral</option><option value="Germany, EU">Germany, EU</option><option value="Japan, Brazil">Japan, Brazil</option><option value="Japan, South Korea">Japan, South Korea</option><option value="Kenya, China">Kenya, China</option><option value="Multilateral">Multilateral</option><option value="Netherlands">Netherlands</option><option value="Turkey">Turkey</option><option value="UAE, World Bank">UAE, World Bank</option><option value="United States">United States</option><option value="United States, Japan">United States, Japan</option><option value="World Bank">World Bank</option></select>
   <select id="filter-region">  <option value="">All Regions</option><option value="Africa">Africa</option><option value="Americas">Americas</option><option value="Asia-Pacific">Asia-Pacific</option><option value="Central Asia">Central Asia</option><option value="East Asia & Pacific">East Asia & Pacific</option><option value="Eastern Europe & Caucasus">Eastern Europe & Caucasus</option><option value="Europe">Europe</option><option value="Latin America & Caribbean">Latin America & Caribbean</option><option value="MENA">MENA</option><option value="North America">North America</option><option value="Other">Other</option></select>
   <select id="filter-sector">  <option value="">All Sectors</option><option value="Agriculture">Agriculture</option><option value="Digital">Digital</option><option value="Energy">Energy</option><option value="Finance">Finance</option><option value="Manufacturing">Manufacturing</option><option value="Natural Resources">Natural Resources</option><option value="Other">Other</option><option value="Social">Social</option><option value="Transport">Transport</option><option value="Water & Environment">Water & Environment</option></select>
@@ -250,7 +330,7 @@
 <!-- INTRO -->
 <div class="intro">
   This tracker aggregates major infrastructure and foreign direct investment deals across
-  multiple sources — including the US Development Finance Corporation (DFC), Asian
+  multiple sources â including the US Development Finance Corporation (DFC), Asian
   Infrastructure Investment Bank (AIIB), World Bank, AidData's Global Chinese Development
   Finance dataset, and ARG's own curated deal list. Use the filters above to explore by
   investor, region, sector, source, or year.
@@ -281,7 +361,7 @@
       <tr><td colspan="8">
         <div class="loading">
           <div class="spinner"></div>
-          <span class="loading-text">Loading deals…</span>
+          <span class="loading-text">Loading dealsâ¦</span>
         </div>
       </td></tr>
     </tbody>
@@ -316,11 +396,11 @@
     <h2>What Is Foreign Direct Investment?</h2>
     <p>A foreign direct investment (FDI) is an investment in the form of a controlling ownership in a
     business or project in one country by an entity based in another country. Unlike portfolio investment,
-    FDI implies direct operational control — building a port, financing a railway, or developing a power
+    FDI implies direct operational control â building a port, financing a railway, or developing a power
     plant. The distinction matters because FDI carries geopolitical weight that passive equity stakes do not.</p>
 
     <h2>Why Track FDI Deals?</h2>
-    <p>Trade deals should be bilateral and mutually beneficial — the benefits and costs to each party should
+    <p>Trade deals should be bilateral and mutually beneficial â the benefits and costs to each party should
     be explicit in the nature of the deal. This tracker aggregates major global FDI and infrastructure
     financing deals across multiple data sources: ARG curated deals, US Development Finance Corporation (DFC)
     commitments, Asian Infrastructure Investment Bank (AIIB) approved projects, World Bank infrastructure
@@ -332,11 +412,11 @@
 
     <h2>Data Sources</h2>
     <p>
-      <strong style="color:#C9963A">ARG Curated</strong> — Archimedes Research Group manually assembled list of major infrastructure deals.<br>
-      <strong style="color:#3B82F6">US DFC</strong> — Development Finance Corporation active transaction portfolio.<br>
-      <strong style="color:#10B981">AIIB</strong> — Asian Infrastructure Investment Bank approved projects.<br>
-      <strong style="color:#8B5CF6">World Bank</strong> — Infrastructure-focused lending above $50M since 2000.<br>
-      <strong style="color:#F97316">AidData</strong> — Global Chinese Development Finance Dataset v3.0 (2000–2021).
+      <strong style="color:#C9963A">ARG Curated</strong> â Archimedes Research Group manually assembled list of major infrastructure deals.<br>
+      <strong style="color:#3B82F6">US DFC</strong> â Development Finance Corporation active transaction portfolio.<br>
+      <strong style="color:#10B981">AIIB</strong> â Asian Infrastructure Investment Bank approved projects.<br>
+      <strong style="color:#8B5CF6">World Bank</strong> â Infrastructure-focused lending above $50M since 2000.<br>
+      <strong style="color:#F97316">AidData</strong> â Global Chinese Development Finance Dataset v3.0 (2000â2021).
     </p>
   </div>
 </div>
@@ -353,9 +433,9 @@
 var DATA = [];
 var sortCol = 'yr', sortDir = -1;
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ââ Helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function fv(v) {
-  if (!v || v === 0) return '—';
+  if (!v || v === 0) return 'â';
   if (v >= 1e12) return '$' + (v/1e12).toFixed(1) + 'T';
   if (v >= 1e9)  return '$' + (v/1e9).toFixed(1)  + 'B';
   if (v >= 1e6)  return '$' + (v/1e6).toFixed(0)  + 'M';
@@ -376,7 +456,7 @@ function badge(src) {
   return '<span class="badge badge-' + cls + '">' + src + '</span>';
 }
 
-// ── KPIs ──────────────────────────────────────────────────────────────────────
+// ââ KPIs ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderKPIs() {
   var tot = DATA.reduce(function(s, d) { return s + (d.val || 0); }, 0);
   var rc = new Set(), ic = new Set();
@@ -391,7 +471,7 @@ function renderKPIs() {
     '<div class="kpi"><div class="v">' + ic.size + '</div><div class="d">Investors</div></div>';
 }
 
-// ── Filters ───────────────────────────────────────────────────────────────────
+// ââ Filters âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function getFilters() {
   return {
     q:   document.getElementById('search').value.toLowerCase().trim(),
@@ -429,7 +509,7 @@ function sortData(arr) {
   });
 }
 
-// ── Render table (paginated) ──────────────────────────────────────────────────
+// ââ Render table (paginated) ââââââââââââââââââââââââââââââââââââââââââââââââââ
 var PAGE_SIZE = 50;
 var currentPage = 0;
 var filteredCache = [];
@@ -447,7 +527,7 @@ function renderPage(page) {
       '<td class="ct">' + d.ic + '</td>' +
       '<td class="sc">' + d.sc + '</td>' +
       '<td class="vl">' + fv(d.val) + '</td>' +
-      '<td class="yr">' + (d.yr || '—') + '</td>' +
+      '<td class="yr">' + (d.yr || 'â') + '</td>' +
       '<td class="nt">' + d.nt + '</td>' +
       '<td class="lk">' + lk + '</td>' +
       '</tr>';
@@ -468,14 +548,14 @@ function renderPager() {
 
   // Show window of page buttons around current page
   var lo = Math.max(0, p-2), hi = Math.min(pages-1, p+2);
-  if (lo > 0) html += '<button onclick="renderPage(0)">1</button>' + (lo>1?'<span class="pager-info">…</span>':'');
+  if (lo > 0) html += '<button onclick="renderPage(0)">1</button>' + (lo>1?'<span class="pager-info">â¦</span>':'');
   for (var i=lo; i<=hi; i++) {
     html += '<button onclick="renderPage(' + i + ')"' + (i===p?' class="active"':'') + '>' + (i+1) + '</button>';
   }
-  if (hi < pages-1) html += (hi<pages-2?'<span class="pager-info">…</span>':'') + '<button onclick="renderPage(' + (pages-1) + ')">' + pages + '</button>';
+  if (hi < pages-1) html += (hi<pages-2?'<span class="pager-info">â¦</span>':'') + '<button onclick="renderPage(' + (pages-1) + ')">' + pages + '</button>';
 
   html += '<button onclick="renderPage(' + Math.min(pages-1,p+1) + ')"' + (p===pages-1?' disabled':'') + '>Next &#8250;</button>';
-  html += '<span class="pager-info">Showing ' + (p*PAGE_SIZE+1).toLocaleString() + '–' + Math.min((p+1)*PAGE_SIZE,total).toLocaleString() + ' of ' + total.toLocaleString() + '</span>';
+  html += '<span class="pager-info">Showing ' + (p*PAGE_SIZE+1).toLocaleString() + 'â' + Math.min((p+1)*PAGE_SIZE,total).toLocaleString() + ' of ' + total.toLocaleString() + '</span>';
   el.innerHTML = html;
   var elB = document.getElementById('pager-bottom');
   if (elB) elB.innerHTML = html;
@@ -489,7 +569,7 @@ function render() {
   renderPage(0);
 }
 
-// ── Sort headers ──────────────────────────────────────────────────────────────
+// ââ Sort headers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 document.querySelectorAll('thead th[data-col]').forEach(function(th) {
   th.addEventListener('click', function() {
     var c = this.getAttribute('data-col');
@@ -527,7 +607,7 @@ document.querySelectorAll('thead th[data-col]').forEach(function(th) {
 });
 
 
-// ── Charts ────────────────────────────────────────────────────────────────────
+// ââ Charts ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function topN(field, n) {
   var c = {};
   DATA.forEach(function(d) {
@@ -567,7 +647,7 @@ function renderCharts() {
     }).join('') + '</div>';
 }
 
-// ── Export CSV ────────────────────────────────────────────────────────────────
+// ââ Export CSV ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function exportCSV() {
   var rows = filterData();
   var cols = ['deal_name','investor_country','investor_entity','recipient_country',
@@ -588,13 +668,13 @@ function exportCSV() {
   a.click();
 }
 
-// ── Collapse toggle ───────────────────────────────────────────────────────────
+// ââ Collapse toggle âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function toggleSection(el) {
   el.classList.toggle('open');
   el.nextElementSibling.classList.toggle('show');
 }
 
-// ── Sticky offset ─────────────────────────────────────────────────────────────
+// ââ Sticky offset âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function updateStickyTop() {
   var hdr     = document.querySelector('.hdr');
   var toolbar = document.querySelector('.toolbar');
@@ -606,7 +686,7 @@ function updateStickyTop() {
 window.addEventListener('resize', updateStickyTop);
 updateStickyTop();
 
-// ── Load data ─────────────────────────────────────────────────────────────────
+// ââ Load data âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 fetch('fdi_deals.json')
   .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
   .then(function(data) { DATA = data; renderKPIs(); render(); renderCharts(); })
