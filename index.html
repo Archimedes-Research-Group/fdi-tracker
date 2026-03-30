@@ -20,7 +20,7 @@
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--navy); color:var(--text); font-family:var(--font-sans); overflow:hidden; }
+  body { background:var(--navy); color:var(--text); font-family:var(--font-sans); }
 
   /* ── Header ── */
   .hdr {
@@ -410,7 +410,8 @@ function renderPager() {
   var total = filteredCache.length;
   var pages = Math.ceil(total / PAGE_SIZE);
   var el = document.getElementById('pager');
-  if (pages <= 1) { el.innerHTML = ''; return; }
+  var elB = document.getElementById('pager-bottom');
+  if (pages <= 1) { el.innerHTML = ''; if (elB) elB.innerHTML = ''; return; }
 
   var p = currentPage;
   var html = '<button onclick="renderPage(' + Math.max(0,p-1) + ')"' + (p===0?' disabled':'') + '>&#8249; Prev</button>';
