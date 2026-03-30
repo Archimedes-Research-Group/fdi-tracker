@@ -234,7 +234,7 @@
 <!-- TOOLBAR -->
 <div class="toolbar">
   <input type="text" id="search" placeholder="Search deals, countries, notes...">
-  <select id="filter-investor"><option value="">All Investors</option><option value="China">China</option><option value="EU">EU</option><option value="European Union">European Union</option><option value="Fund / Multilateral">Fund / Multilateral</option><option value="Multilateral">Multilateral</option><option value="United States">United States</option></select>
+  <select id="filter-investor"><option value="">All Investors</option><option value="China">China</option><option value="EU">EU / European Union</option><option value="Fund / Multilateral">Fund / Multilateral</option><option value="Multilateral">Multilateral</option><option value="United States">United States</option></select>
   <select id="filter-region">  <option value="">All Regions</option><option value="Africa">Africa</option><option value="Americas">Americas</option><option value="Asia-Pacific">Asia-Pacific</option><option value="Central Asia">Central Asia</option><option value="East Asia & Pacific">East Asia & Pacific</option><option value="Eastern Europe & Caucasus">Eastern Europe & Caucasus</option><option value="Europe">Europe</option><option value="Latin America & Caribbean">Latin America & Caribbean</option><option value="MENA">MENA</option><option value="North America">North America</option><option value="Other">Other</option></select>
   <select id="filter-sector">  <option value="">All Sectors</option><option value="Agriculture">Agriculture</option><option value="Digital">Digital</option><option value="Energy">Energy</option><option value="Finance">Finance</option><option value="Manufacturing">Manufacturing</option><option value="Natural Resources">Natural Resources</option><option value="Other">Other</option><option value="Social">Social</option><option value="Transport">Transport</option><option value="Water & Environment">Water & Environment</option></select>
 <div class="year-wrap">
@@ -328,16 +328,16 @@ function badge(src) {
 // ── KPIs ──────────────────────────────────────────────────────────────────────
 function renderKPIs() {
   var tot = DATA.reduce(function(s, d) { return s + (d.val || 0); }, 0);
-  var rc = new Set(), ic = new Set();
+  var rc = new Set(), sc = new Set();
   DATA.forEach(function(d) {
     d.rc.split(',').forEach(function(c) { rc.add(c.trim()); });
-    d.ic.split(',').forEach(function(c) { ic.add(c.trim()); });
+    if (d.src) sc.add(d.src.trim());
   });
   document.getElementById('kpis').innerHTML =
     '<div class="kpi"><div class="v">' + DATA.length.toLocaleString() + '</div><div class="d">Deals</div></div>' +
     '<div class="kpi"><div class="v">' + fv(tot) + '</div><div class="d">Total Value</div></div>' +
     '<div class="kpi"><div class="v">' + rc.size + '</div><div class="d">Recipients</div></div>' +
-    '<div class="kpi"><div class="v">' + ic.size + '</div><div class="d">Investors</div></div>';
+    '<div class="kpi"><div class="v">' + sc.size + '</div><div class="d">Sources</div></div>';
 }
 
 // ── Filters ───────────────────────────────────────────────────────────────────
@@ -359,7 +359,11 @@ function filterData() {
       var hay = (d.nm + ' ' + d.rc + ' ' + d.ic + ' ' + d.rg + ' ' + d.sc + ' ' + d.nt + ' ' + d.src).toLowerCase();
       if (!hay.includes(f.q)) return false;
     }
-    if (f.inv && !d.ic.includes(f.inv)) return false;
+    if (f.inv) {
+      var ic = d.ic;
+      if (f.inv === 'EU') { if (!ic.includes('EU') && !ic.includes('European Union')) return false; }
+      else { if (!ic.includes(f.inv)) return false; }
+    }
     if (f.rg  && d.rg !== f.rg)         return false;
     if (f.sc  && d.sc !== f.sc)         return false;
     if (d.yr && (d.yr < f.yrF || d.yr > f.yrT)) return false;
