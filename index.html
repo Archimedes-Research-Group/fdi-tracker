@@ -547,6 +547,17 @@ fetch('fdi_deals.json')
     document.getElementById('tbody').innerHTML =
       '<tr><td colspan="8"><div class="load-error">&#9888; Failed to load data: ' + e.message + '</div></td></tr>';
   });
+
+// ── Auto-resize: report height to parent iframe ─────────────────────────────
+function reportHeight() {
+  var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+  window.parent.postMessage({ type: 'fdi:setFrameHeight', height: h }, '*');
+}
+reportHeight();
+setTimeout(reportHeight, 500);
+setTimeout(reportHeight, 1500);
+setTimeout(reportHeight, 3000);
+new ResizeObserver(function() { reportHeight(); }).observe(document.body);
 </script>
 </body>
 </html>
