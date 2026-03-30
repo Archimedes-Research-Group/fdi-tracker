@@ -487,9 +487,10 @@ function topN(field, n) {
 }
 
 function bars(id, data) {
-  if (!data.length) return;
+  var el = document.getElementById(id);
+  if (!el || !data.length) return;
   var mx = data[0][1];
-  document.getElementById(id).innerHTML = data.map(function(d) {
+  el.innerHTML = data.map(function(d) {
     return '<div class="br"><span class="bl" title="' + d[0] + '">' + d[0] + '</span>' +
       '<div class="bt"><div class="bf" style="width:' + (d[1]/mx*100).toFixed(1) + '%"></div></div>' +
       '<span class="bv">' + d[1] + '</span></div>';
